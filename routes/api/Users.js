@@ -9,13 +9,21 @@ router.get('/', (request, response) => {
     .then(users => response.json(users))
 })
 
+router.get('/:id', (request, response) => {
+  User.findById(request.params.id)
+  .then(user => response.json(user))
+})
+
 router.post('/', (request, response) => {
   const newUser = new User ({
     username: request.body.username,
     name: request.body.name,
     password: request.body.password
   })
-  newUser.save().then (user=> response.json(user))
+  newUser
+    .save()
+    .then (user=> response.json(user))
+    .catch(error => console.log(error))
 })
 
 router.delete('/:id', (request, response) => {
