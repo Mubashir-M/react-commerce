@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import RegisterForm from './components/RegisterForm'
 import LoginForm from './components/LoginForm'
-import registersService from './services/registers'
+import userService from './services/user'
 
 
 function App() {
@@ -12,6 +12,8 @@ function App() {
   const [password, SetPassword] = useState('')
   const [passwordagain, SetPasswordAgain] = useState('')
   const [message,SetMessage] = useState('')
+  const [msg, Setmsg] = useState([])
+ 
 
 
   const handleRegisterSubmit = (event) => {
@@ -19,32 +21,44 @@ function App() {
     
     if (password === passwordagain) {
 
-      const newUser  = {
-        username: username,
-        name: name,
-        password: password,
+      try {
+
+        const newUser  = {
+          username: username,
+          name: name,
+          password: password,
+        }
+  
+        userService
+        .create(newUser)
+        .then(returnedUser => {
+          SetUsername('')
+          SetName('')
+          SetPassword('')
+          SetPasswordAgain('')
+          SetMessage(`created new user with the username: ${returnedUser.username}`)
+          setTimeout(() => {
+            SetMessage('')
+          }, 5000)
+        })
+        .catch((error) => {
+          Setmsg(error)
+          setTimeout(() => {
+            Setmsg([])
+          }, 5000)
+        })
+
+      } catch (error){
+        console.log(error)
       }
 
-      registersService
-      .create(newUser)
-      .then(returnedUser => {
-        SetUsername('')
-        SetName('')
-        SetPassword('')
-        SetPasswordAgain('')
-        SetMessage(`created new user with the username: ${returnedUser.username}`)
-        setTimeout(() => {
-          SetMessage('')
-        }, 3000)
-     
-      })
 
     } else {
       
       SetMessage('password does not match password again!')
       setTimeout(() => {
         SetMessage('')
-      }, 3000)
+      }, 5000)
       
 
     }
@@ -56,7 +70,7 @@ function App() {
      {
        form === 'Login' ? <LoginForm SetForm = {SetForm}/> : <RegisterForm SetForm = {SetForm} username= {username} SetUsername = {SetUsername} name = {name} SetName = {SetName}
         password = {password} SetPassword = {SetPassword} passwordagain = {passwordagain} SetPasswordAgain= {SetPasswordAgain}  handleRegisterSubmit = {handleRegisterSubmit}
-        message= {message} SetMessage = {SetMessage}
+        message= {message} SetMessage = {SetMessage} msg = {msg} Setmsg = {Setmsg}
      />
      }
      

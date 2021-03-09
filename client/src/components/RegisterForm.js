@@ -3,15 +3,15 @@ import React from 'react'
 
 const RegisterForm = ({
   SetForm,username,SetUsername, name, SetName, password, SetPassword,
-  passwordagain, SetPasswordAgain, handleRegisterSubmit, message, SetMessage
+  passwordagain, SetPasswordAgain, handleRegisterSubmit, message, SetMessage,
+  msg, Setmsg
 }) => {
-
-  
 
   return (
     <div>
       <h1>Register</h1>
-      <h6>{message}</h6>
+      <h4>{message}</h4>
+      <h4>{msg.message}</h4>
       <div className = 'form'>
         <div className = 'form-group'>
           <label>Username: </label>
