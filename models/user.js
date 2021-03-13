@@ -18,6 +18,10 @@ const UserSchema = new Schema ({
   passwordHash: {
     type: String,
     required: true
+  },
+  balance: {
+    type: Number,
+    required: true
   }
 })
 

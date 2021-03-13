@@ -1,35 +1,36 @@
 const express = require('express')
-const router  = express.Router()
+const loginRouter  = express.Router()
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 
 const User = require('../../models/user')
 
-router.get('/', (request, response) => {
-  User.find()
-    .sort({ date: -1 })
-    .then(users => response.json(users))
+
+loginRouter.post('/', async (request, response) => {
+
+  const body = request.body
+  const user = await User.findOne({ username: body.username})
+  const passwordCorrect = user === null
+    ? false
+    : await bcrypt.compare(body.password, user.passwordHash)
+
+  if (!(user && passwordCorrect)) {
+    return response.status(401).json({
+      error: 'invalid username or password'
+    })
+  }
+  const userForToken = {
+    usernname: user.username,
+    id: user._id
+  }
+  
+  const token = jwt.sign(userForToken,process.env.Secret)
+
+  response
+    .status(200)
+    .send({ token, username: user.username, name: user.name})
 })
 
-router.get('/:id', (request, response) => {
-  User.findById(request.params.id)
-  .then(user => response.json(user))
-})
 
-router.post('/', (request, response) => {
-  const newUser = new User ({
-    username: request.body.username,
-    name: request.body.name,
-    password: request.body.password
-  })
-  newUser
-    .save()
-    .then (user=> response.json(user))
-    .catch(error => console.log(error))
-})
 
-router.delete('/:id', (request, response) => {
-  User.findById(request.params.id)
-  .then(user => user.remove().then (() => response.json({ success: true })))
-  .catch(error => response.status(404).json({ success: false }))
-})
-
-module.exports = router
+module.exports = loginRouter

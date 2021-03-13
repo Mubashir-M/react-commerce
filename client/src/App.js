@@ -1,11 +1,16 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import RegisterForm from './components/RegisterForm'
 import LoginForm from './components/LoginForm'
+import AccountForm from './components/Account'
 import userService from './services/user'
+import loginService from './services/login'
+import itemService from './services/items'
+
 
 
 function App() {
   
+  const [user, SetUser] = useState(null)
   const [form, SetForm] = useState('Register')
   const [username, SetUsername] = useState('')
   const [name, SetName] = useState('')
@@ -64,14 +69,73 @@ function App() {
     }
   }
 
+  const handleLogin = async (event) => {
+    
+    try {
+      loginService.login({
+        username,password
+      })
+      .then(returnedUser => {
+        SetUser(returnedUser)
+        window.localStorage.setItem(
+          'loggedUser', JSON.stringify(returnedUser)
+        )
+  
+        itemService.setToken(returnedUser.token)
+        SetUsername('')
+        SetPassword('')
+        SetForm('Account')
+
+      })
+      .catch((error) => {
+        Setmsg(error)
+        setTimeout(() => {
+          Setmsg([])
+        }, 5000)
+      })
+
+    } catch (error) {
+      SetMessage('wrong username or password')
+      setTimeout(() => {
+        SetMessage('')
+      }, 5000)
+    }
+  }
+
+  const handleLogOut = () => {
+    window.localStorage.removeItem('loggedUser')
+    SetForm('Login')
+    SetUser(null)
+  }
+
+  useEffect (() => {
+    const loggedUser = window.localStorage.getItem('loggedUser')
+    
+    if (loggedUser){
+      const user = JSON.parse(loggedUser)
+      SetUser(user)
+      itemService.setToken(user.token)
+      SetForm('Account')
+    }
+  },[])
+
   return (
     <div>
+      
+     {
+       form === 'Login' ? <LoginForm SetForm = {SetForm} username = {username} SetUsername= {SetUsername} password={password} 
+       SetPassword= {SetPassword} handleLogin = {handleLogin} message={message} msg = {msg}/> : null
+     }
 
      {
-       form === 'Login' ? <LoginForm SetForm = {SetForm}/> : <RegisterForm SetForm = {SetForm} username= {username} SetUsername = {SetUsername} name = {name} SetName = {SetName}
-        password = {password} SetPassword = {SetPassword} passwordagain = {passwordagain} SetPasswordAgain= {SetPasswordAgain}  handleRegisterSubmit = {handleRegisterSubmit}
-        message= {message} SetMessage = {SetMessage} msg = {msg} Setmsg = {Setmsg}
-     />
+       form === 'Register' ? <RegisterForm SetForm = {SetForm} username= {username} SetUsername = {SetUsername} name = {name} SetName = {SetName}
+       password = {password} SetPassword = {SetPassword} passwordagain = {passwordagain} SetPasswordAgain= {SetPasswordAgain}  handleRegisterSubmit = {handleRegisterSubmit}
+       message= {message} SetMessage = {SetMessage} msg = {msg} Setmsg = {Setmsg}
+      />:null
+     }
+
+     {
+       form === 'Account' ? <AccountForm user = {user} handleLogOut = {handleLogOut} /> : null
      }
      
     </div>

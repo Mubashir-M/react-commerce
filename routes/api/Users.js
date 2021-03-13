@@ -1,4 +1,3 @@
-const bcryptjs = require('bcryptjs')
 const express = require('express')
 const router  = express.Router()
 
@@ -22,19 +21,14 @@ router.post('/',  async (request, response, next) => {
   console.log('here is body of request:' , body)
   const saltRounds = 10
 
-  /*const user = await (await User.find()).filter(user => user.username === body.username)
-  
-  if (user.length > 0) return response.status(400).json({ message: 'A user with the same username already exists. Please try another username' })
-  if (body.password.length<5) return response.status(400).json({ message: 'Password is too short. Minimum length is 5' })
-  if (body.name.length < 5) return response.status(400).json({ message: 'Name is too short. Minimum length is 5' })
-  if (body.username.length< 5) return response.status(400).json({ message: 'Username is too short. Minimum length is 5' })
-*/
+
   const passwordhash =  await bcryptjs.hash(body.password, saltRounds)
 
   const newUser = new User ({
     username: body.username,
     name: body.name,
-    passwordHash: passwordhash
+    passwordHash: passwordhash,
+    balance: 100
   })
 
   if (body.password.length >= 5) {
