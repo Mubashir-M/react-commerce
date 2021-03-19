@@ -18,6 +18,7 @@ function App() {
   const [passwordagain, SetPasswordAgain] = useState('')
   const [message,SetMessage] = useState('')
   const [msg, Setmsg] = useState([])
+  const [item, SetItem] = useState({ itemName: '', price:'', description: ''})
  
 
 
@@ -108,6 +109,27 @@ function App() {
     SetUser(null)
   }
 
+
+
+  const enlistItem = (event) => {
+    event.preventDefault()
+
+      const newItem = {
+        itemName: item.itemName,
+        price: item.price,
+        description: item.description,
+        user: user
+      }
+
+      itemService
+      .create(newItem)
+      .then(returnedItem => {
+        //concatenate to all items
+        SetItem({ itemName: '', price:'', description: ''})
+      })
+    
+  }
+
   useEffect (() => {
     const loggedUser = window.localStorage.getItem('loggedUser')
     
@@ -135,7 +157,7 @@ function App() {
      }
 
      {
-       form === 'Account' ? <AccountForm user = {user} handleLogOut = {handleLogOut} /> : null
+       form === 'Account' ? <AccountForm user = {user} handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem}/> : null
      }
      
     </div>

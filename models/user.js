@@ -22,7 +22,19 @@ const UserSchema = new Schema ({
   balance: {
     type: Number,
     required: true
-  }
+  },
+  ownedItems: [
+    {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Item'
+    }
+  ],
+  sellingItems:  [
+    {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Item'
+    }
+  ]
 })
 
 UserSchema.plugin(uniqueValidator)

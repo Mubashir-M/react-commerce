@@ -7,6 +7,7 @@ const middleware = require('./utils/middleware')
 
 const userRouter = require ('./routes/api/users') 
 const loginRouter = require('./routes/api/login')
+const itemRouter = require('./routes/api/items')
 const app = express();
 
 
@@ -29,6 +30,7 @@ mongoose
 
   app.use('/api/users', userRouter)
   app.use('/api/login', loginRouter)
+  app.use('/api/items',itemRouter)
   app.use(middleware.errorHandler)
 
 const port = process.env.port || 3000
