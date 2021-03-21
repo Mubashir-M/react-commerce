@@ -1,4 +1,8 @@
 import React, {useState, useEffect} from 'react'
+import './App.css'
+import { BrowserRouter as Router, Switch, Route, Redirect }from 'react-router-dom'
+import Nav from './components/Nav'
+import Home from './components/Home'
 import RegisterForm from './components/RegisterForm'
 import LoginForm from './components/LoginForm'
 import AccountForm from './components/Account'
@@ -11,11 +15,8 @@ import itemService from './services/items'
 function App() {
   
   const [user, SetUser] = useState(null)
-  const [form, SetForm] = useState('Register')
-  const [username, SetUsername] = useState('')
-  const [name, SetName] = useState('')
-  const [password, SetPassword] = useState('')
-  const [passwordagain, SetPasswordAgain] = useState('')
+  const [login, SetLogin] = useState({ username: '', password:''})
+  const [register, SetRegister] = useState({ username:'', name:'', password:'', passwordagain:''})
   const [message,SetMessage] = useState('')
   const [msg, Setmsg] = useState([])
   const [item, SetItem] = useState({ itemName: '', price:'', description: ''})
@@ -25,23 +26,20 @@ function App() {
   const handleRegisterSubmit = (event) => {
     event.preventDefault()
     
-    if (password === passwordagain) {
+    if (register.password === register.passwordagain) {
 
       try {
 
         const newUser  = {
-          username: username,
-          name: name,
-          password: password,
+          username: register.username,
+          name: register.name,
+          password: register.password,
         }
   
         userService
         .create(newUser)
         .then(returnedUser => {
-          SetUsername('')
-          SetName('')
-          SetPassword('')
-          SetPasswordAgain('')
+          SetRegister({ username:'', name:'', password:'', passwordagain:''})
           SetMessage(`created new user with the username: ${returnedUser.username}`)
           setTimeout(() => {
             SetMessage('')
@@ -71,10 +69,12 @@ function App() {
   }
 
   const handleLogin = async (event) => {
-    
+    const loginUsername = login.username
+    const loginPassword = login.password
+    console.log('here are user and pasword', loginUsername, loginPassword)
     try {
       loginService.login({
-        username,password
+        loginUsername,loginPassword
       })
       .then(returnedUser => {
         SetUser(returnedUser)
@@ -83,9 +83,7 @@ function App() {
         )
   
         itemService.setToken(returnedUser.token)
-        SetUsername('')
-        SetPassword('')
-        SetForm('Account')
+        SetLogin({ username: '', password:''})
 
       })
       .catch((error) => {
@@ -105,10 +103,28 @@ function App() {
 
   const handleLogOut = () => {
     window.localStorage.removeItem('loggedUser')
-    SetForm('Login')
     SetUser(null)
   }
 
+  /*
+
+   {
+       form === 'Login' ? <LoginForm SetForm = {SetForm} username = {username} SetUsername= {SetUsername} password={password} 
+       SetPassword= {SetPassword} handleLogin = {handleLogin} message={message} msg = {msg}/> : null
+     }
+
+     {
+       form === 'Register' ? <RegisterForm SetForm = {SetForm} username= {username} SetUsername = {SetUsername} name = {name} SetName = {SetName}
+       password = {password} SetPassword = {SetPassword} passwordagain = {passwordagain} SetPasswordAgain= {SetPasswordAgain}  handleRegisterSubmit = {handleRegisterSubmit}
+       message= {message} SetMessage = {SetMessage} msg = {msg} Setmsg = {Setmsg}
+      />:null
+     }
+
+     {
+       form === 'Account' ? <AccountForm user = {user} handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem}/> : null
+     }
+
+  */
 
 
   const enlistItem = (event) => {
@@ -137,30 +153,43 @@ function App() {
       const user = JSON.parse(loggedUser)
       SetUser(user)
       itemService.setToken(user.token)
-      SetForm('Account')
     }
   },[])
 
   return (
-    <div>
-      
-     {
-       form === 'Login' ? <LoginForm SetForm = {SetForm} username = {username} SetUsername= {SetUsername} password={password} 
-       SetPassword= {SetPassword} handleLogin = {handleLogin} message={message} msg = {msg}/> : null
-     }
-
-     {
-       form === 'Register' ? <RegisterForm SetForm = {SetForm} username= {username} SetUsername = {SetUsername} name = {name} SetName = {SetName}
-       password = {password} SetPassword = {SetPassword} passwordagain = {passwordagain} SetPasswordAgain= {SetPasswordAgain}  handleRegisterSubmit = {handleRegisterSubmit}
-       message= {message} SetMessage = {SetMessage} msg = {msg} Setmsg = {Setmsg}
-      />:null
-     }
-
-     {
-       form === 'Account' ? <AccountForm user = {user} handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem}/> : null
-     }
-     
-    </div>
+    <Router>
+      <div className = 'App'>
+        <Nav/>
+        <Switch>
+        <Route path='/' exact>
+          {
+            user ? < Redirect to = '/Account'/>
+            : <Home/>
+          }
+        </Route>
+        <Route path='/Login'>
+          { user ? < Redirect to = '/Account'/>
+            : <LoginForm login = {login} SetLogin = {SetLogin} handleLogin = {handleLogin} message={message} msg = {msg}/>
+          }
+        </Route>
+        <Route path='/Register'>
+          {
+            user ? < Redirect to = '/Account'/>
+            : <RegisterForm  register = {register} SetRegister= {SetRegister} handleRegisterSubmit = {handleRegisterSubmit}
+                message= {message} SetMessage = {SetMessage} msg = {msg} Setmsg = {Setmsg}
+              />
+          }
+          
+        </Route>
+        <Route path = '/Account'>
+          { user ? <AccountForm user = {user} handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem}/>
+            : < Redirect to = '/Login'/>
+          }
+          
+        </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 

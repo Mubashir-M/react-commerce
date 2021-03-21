@@ -41,7 +41,6 @@ itemRouter.post('/', async (request, response) => {
   })
 
   const savedItem = await newItem.save()
-  console.log('here is saveditem._id', savedItem._id)
   user.sellingItems =  user.sellingItems.concat(savedItem._id)
   await user.save()
   response.json(savedItem.toJSON())

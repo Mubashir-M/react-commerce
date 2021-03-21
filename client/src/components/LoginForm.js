@@ -1,6 +1,6 @@
 import React from 'react'
 
-const LoginForm = ({SetForm, username, SetUsername, password, SetPassword, handleLogin, message ,msg }) => {
+const LoginForm = ({ login, SetLogin, handleLogin, message ,msg }) => {
 
   return (
     <div>
@@ -10,16 +10,15 @@ const LoginForm = ({SetForm, username, SetUsername, password, SetPassword, handl
       <div className = 'form'>
         <div className = 'form-group'>
           <label>Username: </label>
-          <input type = "text" name = "username" placeholder ="username" value = {username} onChange = { event => SetUsername(event.target.value)}></input>
+          <input type = "text" name = "username" placeholder ="username" value = {login.username} onChange = { event => SetLogin({...login, username:event.target.value})}></input>
         </div>
         <div className = 'form-group'>
           <label>Password: </label>
-          <input type = "text" name = "password" placeholder ="password" value = {password} onChange = { event => SetPassword(event.target.value)}></input>
+          <input type = "text" name = "password" placeholder ="password" value = {login.password} onChange = { event => SetLogin({...login, password:event.target.value})}></input>
         </div>
       </div>
       <div className = 'footer'>
         <button className = 'button' onClick = {handleLogin}>Submit</button>
-        <button className = 'button' onClick = {() => SetForm('Register')}>Register</button>
       </div>
     </div>
   )
