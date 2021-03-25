@@ -21,10 +21,14 @@ const create = async newItem => {
   return response.data
 }
 
-const update = async newBlog => {
-
-  const response = await axios.put(`${baseUrl}/${newBlog.id}`, newBlog)
-  return response.data
+const update = async newItem => {
+  try {
+    const response = await axios.put(`${baseUrl}/${newItem.id}`, newItem)
+    return response.data
+  } catch (error) {
+    throw new Error (error.response.data.error)
+  }
+ 
 }
 
 const itemService = { setToken, token, getAll, create, update }

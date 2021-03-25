@@ -23,13 +23,7 @@ const UserSchema = new Schema ({
     type: Number,
     required: true
   },
-  ownedItems: [
-    {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Item'
-    }
-  ],
-  sellingItems:  [
+  Items:  [
     {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Item'

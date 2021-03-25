@@ -20,6 +20,7 @@ function App() {
   const [message,SetMessage] = useState('')
   const [msg, Setmsg] = useState([])
   const [item, SetItem] = useState({ itemName: '', price:'', description: ''})
+  const [items, SetItems] = useState([])
  
 
 
@@ -106,26 +107,6 @@ function App() {
     SetUser(null)
   }
 
-  /*
-
-   {
-       form === 'Login' ? <LoginForm SetForm = {SetForm} username = {username} SetUsername= {SetUsername} password={password} 
-       SetPassword= {SetPassword} handleLogin = {handleLogin} message={message} msg = {msg}/> : null
-     }
-
-     {
-       form === 'Register' ? <RegisterForm SetForm = {SetForm} username= {username} SetUsername = {SetUsername} name = {name} SetName = {SetName}
-       password = {password} SetPassword = {SetPassword} passwordagain = {passwordagain} SetPasswordAgain= {SetPasswordAgain}  handleRegisterSubmit = {handleRegisterSubmit}
-       message= {message} SetMessage = {SetMessage} msg = {msg} Setmsg = {Setmsg}
-      />:null
-     }
-
-     {
-       form === 'Account' ? <AccountForm user = {user} handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem}/> : null
-     }
-
-  */
-
 
   const enlistItem = (event) => {
     event.preventDefault()
@@ -140,7 +121,6 @@ function App() {
       itemService
       .create(newItem)
       .then(returnedItem => {
-        //concatenate to all items
         SetItem({ itemName: '', price:'', description: ''})
       })
     
@@ -153,6 +133,13 @@ function App() {
       const user = JSON.parse(loggedUser)
       SetUser(user)
       itemService.setToken(user.token)
+
+      itemService
+      .getAll()
+      .then(response => {
+        SetItems(response)
+      })
+
     }
   },[])
 
@@ -182,7 +169,9 @@ function App() {
           
         </Route>
         <Route path = '/Account'>
-          { user ? <AccountForm user = {user} handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem}/>
+          { user ? <AccountForm user = {user}  handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem} items = {items}
+              SetItems = {SetItems} 
+            />
             : < Redirect to = '/Login'/>
           }
           
