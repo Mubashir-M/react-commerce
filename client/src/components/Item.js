@@ -1,8 +1,7 @@
 import React from 'react'
 import itemService from '../services/items'
-//import userService from '../services/user'
 
-const Item = ({product, user, message , SetMessage}) => {
+const Item = ({product, user, SetUser ,message , SetMessage, SetShowOwned, items ,SetItems}) => {
   
   const handlePurchase = (event) => {
     event.preventDefault()
@@ -21,7 +20,14 @@ const Item = ({product, user, message , SetMessage}) => {
       itemService
     .update(updatedItem)
     .then(returnedItem => {
-      console.log('here is returned item:',returnedItem)
+      SetMessage(`Purchased ${returnedItem.itemName} successffully.`)
+      const newItems= items.filter(product => product._id !== returnedItem._id )
+      SetItems(newItems)
+      console.log('returneditem:', returnedItem)
+      console.log('example of items',items[0])
+      setTimeout(() => {
+        SetMessage('')
+      }, 5000)
     })
     .catch((error) => {
       
@@ -33,8 +39,8 @@ const Item = ({product, user, message , SetMessage}) => {
     } catch (error) {
       console.log(error)
     }
-    
 
+    
 
 
   }
@@ -58,15 +64,26 @@ const Item = ({product, user, message , SetMessage}) => {
           </div>
         )
       case false:
-          return (
-            <div>
-              <div>{product.itemName}</div>
-              <div>{product.description}</div>
-              <div>{product.price}</div>
-              <div>{product.status}</div>
-              <button className = 'buy-button' onClick = {handleSell} value = {product._id}>Sell</button>
-            </div>
-          )
+          if (product.status === 'Owned'){
+            return (
+              <div>
+                <div>{product.itemName}</div>
+                <div>{product.description}</div>
+                <div>{product.price}</div>
+                <div>{product.status}</div>
+                <button className = 'buy-button' onClick = {handleSell} value = {product._id}>Sell</button>
+              </div>
+            )
+          } else {
+            return (
+              <div>
+                <div>{product.itemName}</div>
+                <div>{product.description}</div>
+                <div>{product.price}</div>
+                <div>{product.status}</div>
+              </div>
+            )
+          }
       default:
         return null
     }

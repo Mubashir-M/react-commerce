@@ -56,8 +56,8 @@ itemRouter.put('/:id',  async (request, response) => {
   const newUser_id = body.user
   
   const newUser = await User.findById(newUser_id)
-  console.log('oldUser.balance: ', oldUser.balance-body.price)
-  if ((oldUser.balance-body.price) < 0 ) {
+  console.log('newUser.balance: ', newUser.balance-body.price)
+  if ((newUser.balance-body.price) < 0 ) {
     return response.status(401).json({error: 'Account balance too low for purchase!'})
   }
 

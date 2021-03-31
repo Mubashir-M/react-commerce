@@ -21,6 +21,8 @@ function App() {
   const [msg, Setmsg] = useState([])
   const [item, SetItem] = useState({ itemName: '', price:'', description: ''})
   const [items, SetItems] = useState([])
+  const [showCreate, SetShowCreate] = useState(false)
+  const [showOwned, SetShowOwned] = useState(false)
  
 
 
@@ -102,6 +104,7 @@ function App() {
     }
   }
 
+  
   const handleLogOut = () => {
     window.localStorage.removeItem('loggedUser')
     SetUser(null)
@@ -122,8 +125,19 @@ function App() {
       .create(newItem)
       .then(returnedItem => {
         SetItem({ itemName: '', price:'', description: ''})
+        console.log('before items addition:', items)
+        const updateItems = items.concat(returnedItem)
+        SetItems(updateItems)
+        SetShowCreate(!showCreate)
+        SetShowOwned(true)
       })
-    
+
+      itemService
+      .getAll()
+      .then(response => {
+        SetItems(response)
+      })
+      console.log('after items addition:', items)
   }
 
   useEffect (() => {
@@ -132,6 +146,11 @@ function App() {
     if (loggedUser){
       const user = JSON.parse(loggedUser)
       SetUser(user)
+      userService
+      .get(user.user._id)
+      .then(returnedUser => {
+        SetUser({...user, user: returnedUser})
+      })
       itemService.setToken(user.token)
 
       itemService
@@ -169,8 +188,8 @@ function App() {
           
         </Route>
         <Route path = '/Account'>
-          { user ? <AccountForm user = {user}  handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem} items = {items}
-              SetItems = {SetItems} 
+          { user ? <AccountForm user = {user} SetUser= {SetUser} handleLogOut = {handleLogOut} item = {item} SetItem= {SetItem} enlistItem = {enlistItem} items = {items}
+              SetItems = {SetItems} showCreate = {showCreate} SetShowCreate={SetShowCreate} showOwned = {showOwned} SetShowOwned = {SetShowOwned}
             />
             : < Redirect to = '/Login'/>
           }

@@ -19,7 +19,6 @@ userRouter.get('/:id', async (request, response) => {
 
 userRouter.post('/',  async (request, response, next) => {
   const body = request.body
-  console.log('here is body of request:' , body)
   const saltRounds = 10
 
 

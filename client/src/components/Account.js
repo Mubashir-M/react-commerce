@@ -1,12 +1,13 @@
 import React, {useState} from 'react'
-//import itemService from  '../services/items'
 import Item from './Item'
 
 
-const Account = ({user, handleLogOut, item, SetItem, enlistItem, items, SetItems}) => {
-  const [showCreate, SetShowCreate] = useState(false)
-  const [showOwned, SetShowOwned] = useState(false)
+const Account = ({user,SetUser ,handleLogOut, item, SetItem, enlistItem, items, SetItems, showCreate , SetShowCreate, showOwned , SetShowOwned}) => {
+ // const [showCreate, SetShowCreate] = useState(false)
+  //const [showOwned, SetShowOwned] = useState(false)
   const [message, SetMessage] = useState('')
+
+
   const NewItemForm =() => {
     return (
       <div>
@@ -38,19 +39,23 @@ const Account = ({user, handleLogOut, item, SetItem, enlistItem, items, SetItems
     )
   }
 
-
+  
 
   const Display = () => {
+    
+
     if (showOwned === true){
       if (items.filter(product => product.user._id === user.user._id).length > 0){
-        return items.filter(product => product.user._id === user.user._id).map(product => <Item key = {product._id} product = {product} user = {user.user} message = {message} SetMessage = {SetMessage}/>)
+        
+        return items.filter(product => product.user._id === user.user._id).map(product => <Item key = {product._id} product = {product} user = {user.user} SetUser= {SetUser} message = {message} SetMessage = {SetMessage} SetShowOwned = {SetShowOwned} items = {items} SetItems ={SetItems}/>)
       }else {
         return <h3>No owned items!</h3>
       }
       
     } else {
-      if (items.filter(product => product.user._id !== user.user._id).length > 0){
-        return items.filter(product => product.user._id !== user.user._id).map(product => <Item key = {product._id} product = {product} user = {user.user} message = {message} SetMessage = {SetMessage}/>)
+      if (items.filter(product => product.user._id !== user.user._id && product.status==='Selling').length > 0){
+        console.log(items.filter(product => product.user._id !== user.user._id && product.status==='Selling'))
+        return items.filter(product => product.user._id !== user.user._id && product.status==='Selling').map(product => <Item key = {product._id} product = {product} user = {user.user}  SetUser= {SetUser} message = {message} SetMessage = {SetMessage} SetShowOwned = {SetShowOwned} items = {items} SetItems ={SetItems}/>)
       } else {
         return <h3>The are no items in this shop yet.</h3>
       }

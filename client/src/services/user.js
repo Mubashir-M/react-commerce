@@ -25,7 +25,13 @@ const create = async newUser => {
 
 }
 
-const userService = { create }
+
+const get = async id => {
+    const response = await axios.get(`${baseUrl}/${id}`)
+    return response.data
+}
+
+const userService = { create, get}
 
 
 export default userService
